@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CommunityMicroGrid OS</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            grid: {
+              950: "#020617",
+              900: "#0f172a",
+              850: "#172033",
+              800: "#1e293b"
+            }
+          },
+          boxShadow: {
+            glow: "0 0 30px rgba(16,185,129,0.12)",
+            blueglow: "0 0 25px rgba(59,130,246,0.16)"
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #334155 #0f172a;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 15% 10%, rgba(16,185,129,.08), transparent 25%),
+        radial-gradient(circle at 85% 20%, rgba(59,130,246,.08), transparent 25%),
+        #020617;
+    }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(148,163,184,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148,163,184,.045) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .pulse-dot {
+      animation: pulseDot 1.8s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,.55); }
+      50% { box-shadow: 0 0 0 7px rgba(16,185,129,0); }
+    }
+
+    .flow-line {
+      stroke-dasharray: 7 8;
+      animation: flow 1.2s linear infinite;
+    }
+
+    @keyframes flow {
+      to { stroke-dashoffset: -30; }
+    }
+
+    input[type="range"] {
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: #1e293b;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 3px solid #064e3b;
+      box-shadow: 0 0 14px rgba(16,185,129,.5);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 3px solid #064e3b;
+    }
+
+    .number-transition {
+      transition: all .25s ease;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-slate-200">
+
+  <!-- ================= NAVIGATION ================= -->
+  <header class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl">
+    <nav class="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 ring-1 ring-emerald-400/20">
+          <span class="text-xl">⚡</span>
+        </div>
+
+        <div>
+          <h1 class="text-sm font-bold tracking-tight text-white sm:text-base">
+            CommunityMicroGrid <span class="text-emerald-400">OS</span>
+          </h1>
+          <p class="hidden text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:block">
+            P2P Energy Command Center
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+
+        <!-- Live Status -->
+        <div class="hidden items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 sm:flex">
+          <span class="pulse-dot h-2 w-2 rounded-full bg-emerald-400"></span>
+          <span class="text-xs font-medium text-emerald-300">LIVE TRADING</span>
+        </div>
+
+        <!-- User -->
+        <div class="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-2 py-1.5">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 text-xs font-bold text-white">
+            AP
+          </div>
+          <div class="hidden pr-2 sm:block">
+            <p class="text-xs font-semibold text-white">House 104</p>
+            <p class="text-[10px] text-slate-500">Prosumer</p>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+
+
+  <!-- ================= MAIN ================= -->
+  <main class="grid-bg mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
+
+    <!-- Page Heading -->
+    <section class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+      <div>
+        <div class="mb-2 flex items-center gap-2 text-xs font-medium text-emerald-400">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+          BENGALURU COMMUNITY MICROGRID
+        </div>
+
+        <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          Energy Command Center
+        </h2>
+
+        <p class="mt-1 max-w-2xl text-sm text-slate-400">
+          Monitor generation, trade surplus energy with your neighborhood,
+          and let AI optimize your P2P electricity flow.
+        </p>
+      </div>
+
+      <div class="text-left md:text-right">
+        <p class="text-xs text-slate-500">GRID SESSION</p>
+        <p class="font-mono text-sm text-slate-300" id="clock">10:33:21 AM</p>
+      </div>
+    </section>
+
+
+    <!-- ================= METRICS ================= -->
+    <section class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+      <!-- Generation -->
+      <div class="glass rounded-2xl p-5 shadow-glow">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">
+              Community Generation
+            </p>
+            <p class="mt-2 text-2xl font-bold text-white">
+              <span id="communityGeneration">128.4</span>
+              <span class="text-sm font-medium text-slate-500">kW</span>
+            </p>
+          </div>
+
+          <div class="rounded-xl bg-emerald-500/10 p-2.5 text-emerald-400">
+            ☀️
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center gap-2 text-xs">
+          <span class="rounded-full bg-emerald-500/10 px-2 py-1 text-emerald-400">
+            ↑ 12.8%
+          </span>
+          <span class="text-slate-500">vs last hour</span>
+        </div>
+      </div>
+
+
+      <!-- Market Price -->
+      <div class="glass rounded-2xl p-5 shadow-blueglow">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">
+              P2P Market Price
+            </p>
+
+            <p class="mt-2 text-2xl font-bold text-white">
+              ₹<span id="marketPrice">6.42</span>
+              <span class="text-sm font-medium text-slate-500">/kWh</span>
+            </p>
+          </div>
+
+          <div class="rounded-xl bg-blue-500/10 p-2.5 text-blue-400">
+            ₹
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center gap-2 text-xs">
+          <span class="text-blue-400">Dynamic pricing</span>
+          <span class="text-slate-500">AI optimized</span>
+        </div>
+      </div>
+
+
+      <!-- Active Trades -->
+      <div class="glass rounded-2xl p-5">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">
+              Active Trades
+            </p>
+
+            <p class="mt-2 text-2xl font-bold text-white">
+              <span id="activeTrades">24</span>
+            </p>
+          </div>
+
+          <div class="rounded-xl bg-violet-500/10 p-2.5 text-violet-400">
+            ⇄
+          </div>
+        </div>
+
+        <div class="mt-4 text-xs text-slate-500">
+          <span class="text-violet-400">8 communities</span> connected
+        </div>
+      </div>
+
+
+      <!-- Savings -->
+      <div class="glass rounded-2xl p-5">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">
+              Monthly Savings
+            </p>
+
+            <p class="mt-2 text-2xl font-bold text-white">
+              ₹<span id="monthlySavings">1,842</span>
+            </p>
+          </div>
+
+          <div class="rounded-xl bg-amber-500/10 p-2.5 text-amber-400">
+            ✦
+          </div>
+        </div>
+
+        <div class="mt-4 text-xs text-slate-500">
+          Estimated through P2P trading
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ================= MAIN DASHBOARD GRID ================= -->
+    <section class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+
+      <!-- ================= ENERGY SIMULATION ================= -->
+      <div class="glass relative overflow-hidden rounded-2xl xl:col-span-2">
+
+        <div class="border-b border-slate-800/80 p-5 sm:p-6">
+          <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-semibold text-white">
+                  Neighborhood Energy Flow
+                </h3>
+
+                <span class="rounded-full bg-blue-500/10 px-2 py-1 text-[10px] font-medium text-blue-400">
+                  SIMULATION
+                </span>
+              </div>
+
+              <p class="mt-1 text-xs text-slate-500">
+                Adjust generation and demand to simulate live P2P matching.
+              </p>
+            </div>
+
+            <!-- Trading status -->
+            <div id="tradeStatus"
+                 class="flex w-fit items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2">
+              <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+              <span class="text-xs font-medium text-emerald-300">
+                LOCAL MATCH ACTIVE
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+
+        <div class="p-5 sm:p-6">
+
+          <!-- Energy Visualization -->
+          <div class="relative mb-8 overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/70 p-4 sm:p-8">
+
+            <div class="absolute inset-0 opacity-30">
+              <div class="h-full w-full"
+                   style="background-image: radial-gradient(circle, #334155 1px, transparent 1px); background-size: 24px 24px;">
+              </div>
+            </div>
+
+            <div class="relative flex min-h-[240px] items-center justify-between gap-3">
+
+              <!-- Solar -->
+              <div class="z-10 flex w-24 flex-col items-center text-center sm:w-32">
+                <div class="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-amber-400/20 bg-amber-400/10 text-3xl shadow-lg sm:h-20 sm:w-20">
+                  ☀️
+                </div>
+
+                <p class="text-xs font-semibold text-white sm:text-sm">
+                  Your Solar
+                </p>
+
+                <p class="mt-1 font-mono text-lg font-bold text-amber-400">
+                  <span id="solarVisual">8.5</span>
+                  <span class="text-xs">kW</span>
+                </p>
+              </div>
+
+
+              <!-- SVG Energy Flow -->
+              <div class="absolute left-[18%] right-[18%] top-1/2 hidden -translate-y-1/2 sm:block">
+                <svg width="100%" height="90" viewBox="0 0 600 90" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="energyGradient" x1="0%" x2="100%">
+                      <stop offset="0%" stop-color="#f59e0b"/>
+                      <stop offset="50%" stop-color="#10b981"/>
+                      <stop offset="100%" stop-color="#3b82f6"/>
+                    </linearGradient>
+                  </defs>
+
+                  <path
+                    id="energyPath"
+                    d="M 0 45 C 150 10, 350 80, 600 45"
+                    fill="none"
+                    stroke="url(#energyGradient)"
+                    stroke-width="4"
+                    class="flow-line"
+                  />
+
+                  <circle cx="300" cy="45" r="7" fill="#10b981">
+                    <animate
+                      attributeName="r"
+                      values="5;9;5"
+                      dur="1.5s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                </svg>
+              </div>
+
+
+              <!-- Community -->
+              <div class="z-10 flex w-24 flex-col items-center text-center sm:w-32">
+                <div class="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/10 text-3xl sm:h-20 sm:w-20">
+                  🏘️
+                </div>
+
+                <p class="text-xs font-semibold text-white sm:text-sm">
+                  Community
+                </p>
+
+                <p class="mt-1 text-xs text-emerald-400">
+                  P2P Network
+                </p>
+              </div>
+
+
+              <!-- Neighbor -->
+              <div class="z-10 flex w-24 flex-col items-center text-center sm:w-32">
+                <div class="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-blue-400/20 bg-blue-400/10 text-3xl sm:h-20 sm:w-20">
+                  🏠
+                </div>
+
+                <p class="text-xs font-semibold text-white sm:text-sm">
+                  Neighbor
+                </p>
+
+                <p class="mt-1 font-mono text-lg font-bold text-blue-400">
+                  <span id="demandVisual">5.2</span>
+                  <span class="text-xs">kW</span>
+                </p>
+              </div>
+
+            </div>
+
+
+            <!-- Flow result -->
+            <div class="relative rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-center">
+
+              <p class="text-[10px] uppercase tracking-widest text-slate-500">
+                Current Energy Balance
+              </p>
+
+              <p class="mt-1 text-xl font-bold text-white">
+                <span id="balanceValue">+3.3</span>
+                <span class="text-sm text-slate-500">kW surplus</span>
+              </p>
+
+              <p id="balanceMessage" class="mt-1 text-xs text-emerald-400">
+                Your surplus can be sold to nearby homes.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <!-- Sliders -->
+          <div class="grid gap-6 md:grid-cols-2">
+
+            <!-- Solar Slider -->
+            <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-5">
+
+              <div class="mb-4 flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-white">
+                    Your Solar Output
+                  </p>
+                  <p class="text-xs text-slate-500">
+                    Current rooftop generation
+                  </p>
+                </div>
+
+                <div class="rounded-lg bg-amber-500/10 px-3 py-2 font-mono text-sm font-bold text-amber-400">
+                  <span id="solarValue">8.5</span> kW
+                </div>
+              </div>
+
+              <input
+                id="solarSlider"
+                type="range"
+                min="0"
+                max="15"
+                step="0.1"
+                value="8.5"
+                class="w-full"
+              />
+
+              <div class="mt-2 flex justify-between text-[10px] text-slate-600">
+                <span>0 kW</span>
+                <span>7.5 kW</span>
+                <span>15 kW</span>
+              </div>
+
+            </div>
+
+
+            <!-- Demand Slider -->
+            <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-5">
+
+              <div class="mb-4 flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-white">
+                    Neighbor Demand
+                  </p>
+                  <p class="text-xs text-slate-500">
+                    Nearby household consumption
+                  </p>
+                </div>
+
+                <div class="rounded-lg bg-blue-500/10 px-3 py-2 font-mono text-sm font-bold text-blue-400">
+                  <span id="demandValue">5.2</span> kW
+                </div>
+              </div>
+
+              <input
+                id="demandSlider"
+                type="range"
+                min="0"
+                max="15"
+                step="0.1"
+                value="5.2"
+                class="w-full"
+              />
+
+              <div class="mt-2 flex justify-between text-[10px] text-slate-600">
+                <span>0 kW</span>
+                <span>7.5 kW</span>
+                <span>15 kW</span>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- Calculation cards -->
+          <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+
+            <div class="rounded-xl bg-slate-900/70 p-4">
+              <p class="text-[10px] uppercase text-slate-500">Generation</p>
+              <p class="mt-1 font-mono text-lg font-bold text-amber-400">
+                <span id="calcGeneration">8.5</span>
+              </p>
+              <p class="text-[10px] text-slate-600">kW</p>
+            </div>
+
+            <div class="rounded-xl bg-slate-900/70 p-4">
+              <p class="text-[10px] uppercase text-slate-500">Demand</p>
+              <p class="mt-1 font-mono text-lg font-bold text-blue-400">
+                <span id="calcDemand">5.2</span>
+              </p>
+              <p class="text-[10px] text-slate-600">kW</p>
+            </div>
+
+            <div class="rounded-xl bg-slate-900/70 p-4">
+              <p class="text-[10px] uppercase text-slate-500">P2P Flow</p>
+              <p class="mt-1 font-mono text-lg font-bold text-emerald-400">
+                <span id="p2pFlow">3.3</span>
+              </p>
+              <p class="text-[10px] text-slate-600">kW</p>
+            </div>
+
+            <div class="rounded-xl bg-slate-900/70 p-4">
+              <p class="text-[10px] uppercase text-slate-500">Grid Import</p>
+              <p class="mt-1 font-mono text-lg font-bold text-slate-300">
+                <span id="gridImport">0.0</span>
+              </p>
+              <p class="text-[10px] text-slate-600">kW</p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- ================= AI FEED ================= -->
+      <aside class="glass rounded-2xl overflow-hidden">
+
+        <div class="border-b border-slate-800/80 p-5">
+
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-semibold text-white">
+                  AI Trading Feed
+                </h3>
+
+                <span class="rounded bg-blue-500/10 px-2 py-1 text-[9px] font-bold text-blue-400">
+                  AI
+                </span>
+              </div>
+
+              <p class="mt-1 text-xs text-slate-500">
+                Autonomous market optimization
+              </p>
+            </div>
+
+            <div class="h-2 w-2 rounded-full bg-blue-400 shadow-[0_0_12px_rgba(59,130,246,.8)]"></div>
+          </div>
+
+        </div>
+
+
+        <!-- Feed -->
+        <div class="max-h-[310px] overflow-y-auto p-4">
+
+          <div class="mb-3 flex gap-3 border-b border-slate-800/60 pb-3">
+            <div class="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-xs text-emerald-400">
+              ⚡
+            </div>
+
+            <div>
+              <p class="text-xs font-medium text-slate-300">
+                Matched local surplus
+              </p>
+
+              <p class="mt-1 text-[10px] text-slate-500">
+                House 104 → House 112 · 2.4 kWh
+              </p>
+
+              <p class="mt-1 text-[9px] text-emerald-500">
+                8 seconds ago
+              </p>
+            </div>
+          </div>
+
+
+          <div class="mb-3 flex gap-3 border-b border-slate-800/60 pb-3">
+            <div class="mt-1 flex h-7 w-7 shrink-0 items-cen
